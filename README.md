@@ -12,7 +12,7 @@ gemini extensions link ./gemini-cli-elasticsearch
 
 ## Configuring
 
-Two environment variables are necessary to connect to your Agent Builder MCP server:
+Two [environment variables](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/configuration.md#environment-variables--env-files) are necessary to connect to your Agent Builder MCP server:
 
 - `ELASTIC_MCP_URL`: the full URL to your hosted MCP server
 - `ELASTIC_API_KEY`: the API key for your hosted MCP server
