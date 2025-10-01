@@ -1,15 +1,19 @@
 {
-  "name": "gemini-cli-elastic-agent-builder",
+  "name": "gemini-cli-elasticsearch",
   "version": "0.1.0",
   "mcpServers": {
     "elastic-agent-builder": {
       "command": "npx",
       "args": [
+        "-y",
         "mcp-remote",
-        "${KIBANA_URL}/api/agent_builder/mcp",
+        "${ELASTIC_MCP_URL}",
         "--header",
-        "Authorization: ApiKey ${API_KEY}"
-      ]
+        "Authorization:${AUTH}"
+      ],
+      "env": {
+        "AUTH": "ApiKey ${ELASTIC_API_KEY}"
+      }
     }
   }
 }

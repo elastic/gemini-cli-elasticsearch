@@ -1,0 +1,2 @@
+Gemini CLI Elasticsearch Extension
+Copyright 2025 Elasticsearch B.V.
