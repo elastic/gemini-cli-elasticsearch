@@ -6,7 +6,7 @@ Connects directly to an Agent Builder MCP server hosted in Elastic Cloud.
 While this repository is still private, we must clone the repository and link:
 
 ```sh
-git@github.com:elastic/gemini-cli-elasticsearch.git
+git clone git@github.com:elastic/gemini-cli-elasticsearch.git
 gemini extensions link ./gemini-cli-elasticsearch
 ```
 
