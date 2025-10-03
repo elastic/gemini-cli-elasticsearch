@@ -15,5 +15,6 @@
         "AUTH": "ApiKey ${ELASTIC_API_KEY}"
       }
     }
-  }
+  },
+  "contextFileName": "GEMINI.md"
 }
