@@ -1,13 +1,10 @@
 The official Elasticsearch extension for [Gemini CLI](https://github.com/google-gemini/gemini-cli).
 Connects directly to an Agent Builder MCP server hosted in Elastic Cloud.
 
-## Installing
-
-While this repository is still private, we must clone the repository and link:
+## Install
 
 ```sh
-git clone git@github.com:elastic/gemini-cli-elasticsearch.git
-gemini extensions link ./gemini-cli-elasticsearch
+gemini extensions install https://github.com/elastic/gemini-cli-elasticsearch
 ```
 
 ## Configuring
