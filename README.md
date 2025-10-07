@@ -7,14 +7,14 @@ Connects directly to an Elasticsearch Model Context Protocol (MCP) server hosted
 
 ## Installation & Setup
 
-1. Install the **gemini-cli-elasticsearch extension**:
+1. Install the **gemini-cli-elasticsearch** extensions:
     ```sh
     gemini extensions install https://github.com/elastic/gemini-cli-elasticsearch
     ```
 
 2. To connect to the remote Elasticsearch MCP server, you first need to enable the Elastic Agent Builder (currently in Technical Preview) in your Elastic Cloud Serverless Kibana instance. Once enabled, the Elasticsearch MCP server's URL can be found in the Kibana Agent Builder UI by navigating to **Agents > Manage tools > MCP Server > Copy MCP Server URL**.
 
-3. Two [environment variables](https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/configuration.md#environment-variables--env-files) are necessary to connect to your Elasticsearch MCP server (and must be passed into your installed extension):
+3. Two environment variables are necessary to connect to your Elasticsearch MCP server (and must be passed into your installed extension):
 
     - `ELASTIC_MCP_URL`: the full URL to your hosted MCP server
     - `ELASTIC_API_KEY`: the API key for your hosted MCP server
@@ -29,7 +29,7 @@ Connects directly to an Elasticsearch Model Context Protocol (MCP) server hosted
 
 ## Usage
 
-Once installed with an active connection to the Elasticsearch MCP server, the **gemini-cli-elasticsearch extension** automatically invokes available Tools as part of your natural language query input (where each Tool invocation is displayed as part of the CLI output response).  
+Once installed with an active connection to the Elasticsearch MCP server, the **gemini-cli-elasticsearch** extension automatically invokes available Tools as part of your natural language query input (where each Tool invocation is displayed as part of the CLI output response).  
 
 ### Available Tools
 
