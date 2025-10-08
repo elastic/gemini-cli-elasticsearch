@@ -1,6 +1,6 @@
 {
-  "name": "gemini-cli-elasticsearch",
-  "version": "0.1.0",
+  "name": "elasticsearch",
+  "version": "0.1.1",
   "mcpServers": {
     "elastic-agent-builder": {
       "command": "npx",
