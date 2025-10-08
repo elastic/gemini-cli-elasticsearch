@@ -1,4 +1,4 @@
-The official Elasticsearch extension for the [Gemini CLI](https://github.com/google-gemini/gemini-cli) to search, retrieve, and analyze Elasticsearch data in developer and agentic workflows. 
+The official Elasticsearch extension for the [Gemini CLI](https://github.com/google-gemini/gemini-cli) to search, retrieve, and analyze Elasticsearch data in developer and agentic workflows.
 
 Connects directly to an Elasticsearch Model Context Protocol (MCP) server hosted in [Elastic Cloud Serverless](https://www.elastic.co/cloud/serverless).
 
@@ -7,7 +7,7 @@ Connects directly to an Elasticsearch Model Context Protocol (MCP) server hosted
 
 ## Installation & Setup
 
-1. Install the **gemini-cli-elasticsearch** extensions:
+1. Install the **elasticsearch** extension:
     ```sh
     gemini extensions install https://github.com/elastic/gemini-cli-elasticsearch
     ```
@@ -21,24 +21,24 @@ Connects directly to an Elasticsearch Model Context Protocol (MCP) server hosted
 
     The API key should be a [standard Elasticsearch API key](https://www.elastic.co/docs/deploy-manage/api-keys/elasticsearch-api-keys).
 
-4. In the Gemini CLI, verify the **gemini-cli-elasticsearch** extension is installed and active: 
+4. In the Gemini CLI, verify the **cli-elasticsearch** extension is installed and active:
 
     ```sh
-    /extensions list  
+    /extensions list
     ```
 
 ## Usage
 
-Once installed with an active connection to the Elasticsearch MCP server, the **gemini-cli-elasticsearch** extension automatically invokes available Tools as part of your natural language query input (where each Tool invocation is displayed as part of the CLI output response).  
+Once installed with an active connection to the Elasticsearch MCP server, the **elasticsearch** extension automatically invokes available Tools as part of your natural language query input (where each Tool invocation is displayed as part of the CLI output response).
 
 ### Available Tools
 
 | Tool | Description |
 | -------- | -------- |
-| `platform_core.search` | Used for finding documents, counting, aggregating, or summarizing data from a known index. Supports both full-text relevance searches and structured analytical queries. |	
-| `platform_core.get_document_by_id` | Retrieve the full content (source) of an Elasticsearch document based on its ID and index name. | 		
-| `platform_core.get_index_mapping` | Retrieve mappings for the specified index or indices. | 		
-| `platform_core.index_explorer` | List relevant indices, aliases and datastreams based on a natural language query. | 	
-| `platform_core.list_indices` | List the indices, aliases and datastreams from the Elasticsearch cluster. |	
-| `platform_core.execute_esql` | Execute an ES\|QL query and return the results in a tabular format. | 		
-| `platform_core.generate_esql` | Generate an ES\|QL query from a natural language query. | 
+| `platform_core.search` | Used for finding documents, counting, aggregating, or summarizing data from a known index. Supports both full-text relevance searches and structured analytical queries. |
+| `platform_core.get_document_by_id` | Retrieve the full content (source) of an Elasticsearch document based on its ID and index name. |
+| `platform_core.get_index_mapping` | Retrieve mappings for the specified index or indices. |
+| `platform_core.index_explorer` | List relevant indices, aliases and datastreams based on a natural language query. |
+| `platform_core.list_indices` | List the indices, aliases and datastreams from the Elasticsearch cluster. |
+| `platform_core.execute_esql` | Execute an ES\|QL query and return the results in a tabular format. |
+| `platform_core.generate_esql` | Generate an ES\|QL query from a natural language query. |
