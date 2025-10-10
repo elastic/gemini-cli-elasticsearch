@@ -5,6 +5,10 @@ Connects directly to an Elasticsearch Model Context Protocol (MCP) server hosted
 > [!CAUTION]
 > This extension is currently experimental.
 
+## Prerequisites
+
+- An Elastic Cloud Serverless deployment (Sign up for a [free trial](https://cloud.elastic.co/serverless-registration))
+
 ## Installation & Setup
 
 1. Install the **elasticsearch** extension:
