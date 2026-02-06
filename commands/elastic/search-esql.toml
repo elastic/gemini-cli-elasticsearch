@@ -1,0 +1,5 @@
+prompt = """
+Please search for `{{args}}` in the Elasticsearch cluster using the platform.core.execute_esql tool from the elastic-agent-builder MCP server.
+
+This tools accepts an ES|QL query.  You can use the platform.core.generate_esql tool to generate it.
+"""

@@ -1,0 +1,3 @@
+prompt = """
+Please list Elasticsearch indices using the platform.core.list_indices tool from the elastic-agent-builder MCP server.
+"""
