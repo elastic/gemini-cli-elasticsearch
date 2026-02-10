@@ -1,0 +1,3 @@
+prompt = """
+Please get the mapping from the `{{args}}` index or indices in the Elasticsearch cluster using the platform.core.get_index_mapping from the elastic-agent-builder MCP server.
+"""
