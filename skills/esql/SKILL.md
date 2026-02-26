@@ -4,7 +4,7 @@ description: >
   Interact with Elasticsearch using ES|QL and curl. Use when querying, managing indices, 
   checking cluster Elasticsearch. Requires endpoint URL and API key.
   Covers: search (using ES|QL), index management, mappings.
-compatiblity: Requires Elsticsearch, curl, jq, printenv.
+compatiblity: Requires Elasticsearch, curl, jq, printenv.
 ---
 
 # Elasticsearch
