@@ -79,11 +79,11 @@ When a user requests to search for data in Elasticsearch, follow this procedure:
    - Use `STATS ... BY` for aggregations
    - Add `SORT` and `LIMIT` as needed
 
-3. **Translate the user's request into ES|QL**
+5. **Translate the user's request into ES|QL**
 - Translate the user's request in an ES|QL query using the index mapping to translate the user’s request.
 - Ensure the query aligns with the field types and structure defined in the mapping.
 
-4. Execute the Query
+6. Execute the Query
 - Execute the generated ES|QL query using the following API command (replace `insert-here-the-query` with the translated ES|QL query):
 ```bash
 curl -s -X POST "${ELASTIC_URL%/}/_query" \
