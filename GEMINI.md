@@ -29,10 +29,15 @@ Queries can be written in several formats, but the most common ones, which are e
 ## Extension prerequisites
 
 - The user must have an existing [Elastic Cloud](https://cloud.elastic.co) account, with an active Elasticsearch cluster and its counterpart Kibana instance.
-- The Kibana instance must have the Elastic Agent Builder feature enabled.
+- The Kibana instance must have the Elastic Agent Builder feature enabled (this is required only for using MCP, for the SKILLs this is not required).
   Agent Builder's tools are exposed as tools in the MCP server that this extension consumes; adding, removing or modifying tools must be done in the Kibana UI.
 
 For this extension to connect to its MCP server, two environment variables must be set:
 
 - `ELASTIC_MCP_URL`: the full URL to your hosted MCP server
 - `ELASTIC_API_KEY`: the API key for your hosted MCP server
+
+This extension provides also a set of SKILLs in the `/skills` folder. For these two environment variables must be set:
+
+- `ELASTIC_URL`: the full URL to your hosted Elasticsearch
+- `ELASTIC_API_KEY`: the API key for your hosted Elasticsearch
