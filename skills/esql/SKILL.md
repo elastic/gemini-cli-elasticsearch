@@ -13,12 +13,8 @@ All Elasticsearch interaction is via REST API using `curl`. No SDK or client lib
 
 ## Authentication
 
-To connect to Elasticsearch, a URL and an API key are required. These must be provided using two environment variables:
+To connect to Elasticsearch, a URL and an API key are required. These are stored in two environment variables:
 `ELASTIC_URL` and `ELASTIC_API_KEY`.
-
-If either of these environment variables is not set, ask the user to provide the missing value(s) and instruct them to export the variables for the current session.
-
-When requesting the `ELASTIC_API_KEY`, do not display it in plaintext. Instead, mask each character with an asterisk.
 
 ## IMPORTANT
 
