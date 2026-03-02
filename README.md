@@ -20,7 +20,7 @@ Connects directly to Elasticsearch using:
     - Get your MCP server URL from **Agents > View all tools > Manage MCP > Copy MCP Server URL**
     - The URL will look like: `https://your-deployment.kb.region.gcp.elastic.cloud/api/agent_builder/mcp`
 
-3. You are using Elasticsearch with [start-local](https://github.com/elastic/start-local) you already have the API key in the `.env` file of start-local.
+3. You need an API key. If you are running Elasticsearch with [start-local](https://github.com/elastic/start-local) you already have the API key in the start-local `.env` file.
    Otherwise, you can create a [standard Elasticsearch API key](https://www.elastic.co/docs/deploy-manage/api-keys/elasticsearch-api-keys):
     - In Kibana: **Stack Management > Security > API Keys > Create API key**
     - Copy the **encoded** API key value
