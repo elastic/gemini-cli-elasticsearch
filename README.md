@@ -132,7 +132,7 @@ To re-enable it, you need to execute the `/mcp enable elastic-agent-builder` com
 
 ### ES|QL skill
 
-We provide an [ES|QL](/skills/esql/SKILL.md) skill to query Elsaticsearch in natural language specifing the index name.
+We provide an [ES|QL](/skills/esql/SKILL.md) skill to query Elasticsearch in natural language specifying the index name.
 For instance, if you have an index named `test-data` you can ask to show the first 10 documents with the following query:
 
 ```
