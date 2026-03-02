@@ -16,7 +16,7 @@ Connects directly to Elasticsearch using:
     ```sh
     gemini extensions install https://github.com/elastic/gemini-cli-elasticsearch
     ```
-2. If you want to use Elastic Agent Builder in your Elasticsearch (Serverless or 9.3+) you need to get the MCP url:
+2. To use the Elastic Agent Builder MCP server (on Elastic Serverless or 9.3+) you need [your MCP server URL](https://www.elastic.co/docs/explore-analyze/ai-features/agent-builder/tools#copy-your-mcp-server-url):
     - Get your MCP server URL from **Agents > View all tools > Manage MCP > Copy MCP Server URL**
     - The URL will look like: `https://your-deployment.kb.region.gcp.elastic.cloud/api/agent_builder/mcp`
 
