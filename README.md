@@ -5,7 +5,6 @@ Connects directly to Elasticsearch using:
 - Agent Skills (using the Elasticsearch APIs)
 
 
- server hosted in [Elastic Cloud Serverless](https://www.elastic.co/cloud/serverless).
 
 > [!CAUTION]
 > This extension is currently experimental.
