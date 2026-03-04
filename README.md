@@ -1,6 +1,10 @@
 The official Elasticsearch extension for the [Gemini CLI](https://github.com/google-gemini/gemini-cli) to search, retrieve, and analyze Elasticsearch data in developer and agentic workflows.
 
-Connects directly to an Elasticsearch Model Context Protocol (MCP) server hosted in [Elastic Cloud Serverless](https://www.elastic.co/cloud/serverless).
+Connects directly to Elasticsearch using:
+- Model Context Protocol (MCP)
+- Agent Skills (using the Elasticsearch APIs)
+
+
 
 > [!CAUTION]
 > This extension is currently experimental.
@@ -11,19 +15,20 @@ Connects directly to an Elasticsearch Model Context Protocol (MCP) server hosted
     ```sh
     gemini extensions install https://github.com/elastic/gemini-cli-elasticsearch
     ```
-
-2. Enable the Elastic Agent Builder in your Elastic Cloud Kibana instance (Serverless or 9.3+):
+2. To use the Elastic Agent Builder MCP server (on Elastic Serverless or 9.3+) you need [your MCP server URL](https://www.elastic.co/docs/explore-analyze/ai-features/agent-builder/tools#copy-your-mcp-server-url):
     - Get your MCP server URL from **Agents > View all tools > Manage MCP > Copy MCP Server URL**
     - The URL will look like: `https://your-deployment.kb.region.gcp.elastic.cloud/api/agent_builder/mcp`
 
-3. Create a [standard Elasticsearch API key](https://www.elastic.co/docs/deploy-manage/api-keys/elasticsearch-api-keys):
+3. You need an API key. If you are running Elasticsearch with [start-local](https://github.com/elastic/start-local) you already have the API key in the start-local `.env` file.
+   Otherwise, you can create a [standard Elasticsearch API key](https://www.elastic.co/docs/deploy-manage/api-keys/elasticsearch-api-keys):
     - In Kibana: **Stack Management > Security > API Keys > Create API key**
     - Copy the **encoded** API key value
 
 4. Set the required environment variables in your shell:
 
     ```sh
-    export ELASTIC_MCP_URL="https://your-deployment.kb.region.gcp.elastic.cloud/api/agent_builder/mcp"
+    export ELASTIC_URL="your-elasticsearch-url"
+    export ELASTIC_MCP_URL="your-elasticsearch-mcp-url"
     export ELASTIC_API_KEY="your-encoded-api-key"
     ```
 
@@ -43,13 +48,21 @@ Connects directly to an Elasticsearch Model Context Protocol (MCP) server hosted
     
     You should see `✓ elastic-agent-builder ... - Connected`
 
-7. Test with a query:
+7. Verify the Agent Skills:
+
+    ```sh
+    gemini skills list
+    ```
+    
+    You should see one the the available skill, e.g. `- esql      Interact with Elasticsearch using ES|QL and curl...`
+
+8. Test with a query using MCP:
 
     ```sh
     gemini chat "list my elasticsearch indices"
     ```
 
-## Usage
+## Usage with MCP
 
 Once installed with an active connection to the Elasticsearch MCP server, the **elasticsearch** extension automatically invokes available Tools as part of your natural language query input (where each Tool invocation is displayed as part of the CLI output response).
 
@@ -97,5 +110,32 @@ This extension exposes Gemini commands to directly call MCP tools.
 **Authentication errors:**
 - Ensure you're using the **encoded** API key format
 - Check the key has proper permissions in Kibana
+
+
+## Usage with Agent Skills
+
+The agent skills available in the folder [skills](/skills/) are automatically discovered by Gemini CLI.
+You can list the available skills in Gemini console using the following command:
+
+```sh
+/skills list
+```
+
+Since some skills may overlap with the tools available on the `elastic-agent-builder` MCP server, we recommend disabling it using the following command:
+
+```sh
+/mcp disable elastic-agent-builder
+```
+
+To re-enable it, you need to execute the `/mcp enable elastic-agent-builder` command.
+
+### ES|QL skill
+
+We provide an [ES|QL](/skills/esql/SKILL.md) skill to query Elasticsearch in natural language specifying the index name.
+For instance, if you have an index named `test-data` you can ask to show the first 10 documents with the following query:
+
+```
+Retrieve the top 10 documents from the test-data index in Elasticsearch
+```
 
 For more help, see the [Elastic Community Forums](https://discuss.elastic.co/)
