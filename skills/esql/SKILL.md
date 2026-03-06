@@ -4,7 +4,7 @@ description: >
   Interact with Elasticsearch using ES|QL and curl. Use when querying, managing indices, 
   checking cluster Elasticsearch. Requires endpoint URL and API key.
   Covers: search (using ES|QL), index management, mappings.
-compatiblity: Requires Elasticsearch, curl, jq, printenv.
+compatibility: Requires Elasticsearch, curl, jq, printenv.
 ---
 
 # Elasticsearch
@@ -26,7 +26,7 @@ Always follow these rules:
 
 The available APIs to interact with Elasticsearch are:
 
-### Health Check
+### Health Check (not available if Elasticsearch is running on serverless)
 
 The following command can be used to check if Elasticsearch is running properly.
 The cluster health can be green=ok, yellow=warning, red=problem.
@@ -161,7 +161,3 @@ When query execution fails, the script returns:
 - Type mismatch → Use type conversion functions (TO_STRING, TO_INTEGER, etc.)
 - Syntax error → Review ES|QL reference for correct syntax
 - No results → Check time range and filter conditions
-
-### Search tips
-
-- **`?size=0`** on search requests when you only want aggregations (skip hits).
