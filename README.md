@@ -114,6 +114,16 @@ This extension exposes Gemini commands to directly call MCP tools.
 
 Install skills from the [elastic/agent-skills](https://github.com/elastic/agent-skills) repository, which provides skills for Elasticsearch, Kibana, Observability, Security, and Elastic Cloud.
 
+### Disabling MCP when using skills
+
+Since some skills may overlap with the tools available on the `elastic-agent-builder` MCP server, you can disable it:
+
+```sh
+/mcp disable elastic-agent-builder
+```
+
+To re-enable it: `/mcp enable elastic-agent-builder`
+
 ### Installing skills
 
 Use the slash commands inside a Gemini CLI session to browse, install, and manage skills.
@@ -168,15 +178,5 @@ node <extension-path>/scripts/install-skills.js --uninstall elasticsearch-esql
 ```
 
 Run `gemini extensions list` to find your extension path (typically `~/.gemini/extensions/elasticsearch`).
-
-### Disabling MCP when using skills
-
-Since some skills may overlap with the tools available on the `elastic-agent-builder` MCP server, you can disable it:
-
-```sh
-/mcp disable elastic-agent-builder
-```
-
-To re-enable it: `/mcp enable elastic-agent-builder`
 
 For more help, see the [Elastic Community Forums](https://discuss.elastic.co/)
