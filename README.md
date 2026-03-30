@@ -48,13 +48,7 @@ Connects directly to Elasticsearch using:
     
     You should see `✓ elastic-agent-builder ... - Connected`
 
-7. Verify the Agent Skills:
-
-    ```sh
-    gemini skills list
-    ```
-    
-    You should see one the the available skill, e.g. `- esql      Interact with Elasticsearch using ES|QL and curl...`
+7. (Optional) Install Agent Skills from [elastic/agent-skills](https://github.com/elastic/agent-skills) -- see [Usage with Agent Skills](#usage-with-agent-skills) below.
 
 8. Test with a query using MCP:
 
@@ -118,11 +112,9 @@ This extension exposes Gemini commands to directly call MCP tools.
 
 ## Usage with Agent Skills
 
-This extension ships with a built-in [ES|QL](/skills/esql/SKILL.md) skill that is automatically discovered by Gemini CLI.
+Install skills from the [elastic/agent-skills](https://github.com/elastic/agent-skills) repository, which provides skills for Elasticsearch, Kibana, Observability, Security, and Elastic Cloud.
 
-You can also install additional skills from the [elastic/agent-skills](https://github.com/elastic/agent-skills) repository, which provides skills for Elasticsearch, Kibana, Observability, Security, and Elastic Cloud.
-
-### Installing additional skills
+### Installing skills
 
 Use the slash commands inside a Gemini CLI session to browse, install, and manage skills.
 
@@ -176,15 +168,6 @@ node <extension-path>/scripts/install-skills.js --uninstall elasticsearch-esql
 ```
 
 Run `gemini extensions list` to find your extension path (typically `~/.gemini/extensions/elasticsearch`).
-
-### Bundled skill: ES|QL
-
-The built-in [ES|QL](/skills/esql/SKILL.md) skill lets you query Elasticsearch in natural language by specifying the index name.
-For instance, if you have an index named `test-data` you can ask to show the first 10 documents with the following query:
-
-```
-Retrieve the top 10 documents from the test-data index in Elasticsearch
-```
 
 ### Disabling MCP when using skills
 
