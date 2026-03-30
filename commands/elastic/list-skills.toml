@@ -1,0 +1,6 @@
+description = "Use only to list available Elastic Agent Skills for installation."
+
+prompt = """
+Run the command and display this output verbatim. Do not add commentary or reformat.
+!{node "${extensionPath}${/}scripts${/}install-skills.js" --list}
+"""
