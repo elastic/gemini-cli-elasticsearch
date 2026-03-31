@@ -178,6 +178,22 @@ function canonicalName(domain, skillDir) {
 }
 
 /**
+ * Builds a flat numbered list of all skills in display order
+ * (domains sorted alphabetically, skills sorted within each domain).
+ * Returns an array of {domain, skillDir, name} objects where the
+ * array index + 1 is the skill number.
+ */
+function buildNumberedList(skills) {
+  const list = [];
+  for (const domain of Object.keys(skills).sort()) {
+    for (const skillDir of skills[domain]) {
+      list.push({ domain, skillDir, name: canonicalName(domain, skillDir) });
+    }
+  }
+  return list;
+}
+
+/**
  * Downloads all files for a single skill and writes them to the target directory.
  * Creates the directory structure (references/, scripts/, etc.) as needed.
  */
@@ -213,21 +229,23 @@ async function installSkill(tree, skills, name, targetDir) {
 async function listSkills(forceRefresh = false) {
   const tree = await fetchRepoTree(forceRefresh);
   const skills = discoverSkills(tree);
-  const domains = Object.keys(skills).sort();
+  const numbered = buildNumberedList(skills);
 
   console.log("Available Elastic Agent Skills\n");
 
-  let total = 0;
-  for (const domain of domains) {
-    const list = skills[domain];
-    total += list.length;
-    console.log(`${domain} (${list.length}):`);
-    for (const s of list) {
-      console.log(`  - ${canonicalName(domain, s)}`);
+  let currentDomain = null;
+  for (let i = 0; i < numbered.length; i++) {
+    const { domain, name } = numbered[i];
+    if (domain !== currentDomain) {
+      if (currentDomain !== null) console.log();
+      const count = skills[domain].length;
+      console.log(`${domain} (${count}):`);
+      currentDomain = domain;
     }
-    console.log();
+    console.log(`  ${String(i + 1).padStart(2)}) ${name}`);
   }
-  console.log(`Total: ${total} skills`);
+  console.log(`\nTotal: ${numbered.length} skills`);
+  console.log("Install by number: --install 1 5 12");
 }
 
 /**
@@ -237,9 +255,14 @@ async function listSkills(forceRefresh = false) {
 async function handleInstall(names, targetDir, forceRefresh = false) {
   const tree = await fetchRepoTree(forceRefresh);
   const skills = discoverSkills(tree);
+  const numbered = buildNumberedList(skills);
   const installed = [];
 
-  for (const name of names) {
+  for (const input of names) {
+    const num = parseInt(input, 10);
+    const name = (!isNaN(num) && num >= 1 && num <= numbered.length)
+      ? numbered[num - 1].name
+      : input;
     const result = await installSkill(tree, skills, name, targetDir);
     installed.push(result);
   }
