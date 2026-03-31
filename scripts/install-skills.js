@@ -12,9 +12,9 @@
  * follow the Agent Skills open standard (https://agentskills.io/).
  *
  * Usage:
- *   node install-skills.js --list
- *   node install-skills.js --install <skill-name> [<skill-name> ...] [--scope <scope>]
- *   node install-skills.js --install-all [--scope <scope>]
+ *   node install-skills.js --list [--refresh]
+ *   node install-skills.js --install <skill-name> [<skill-name> ...] [--scope <scope>] [--refresh]
+ *   node install-skills.js --install-all [--scope <scope>] [--refresh]
  *   node install-skills.js --uninstall <skill-name> [<skill-name> ...] [--scope <scope>]
  *   node install-skills.js --installed [--scope <scope>]
  */
@@ -33,18 +33,53 @@ const HEADERS = {
   "User-Agent": "elastic-skill-installer",
 };
 
+const CACHE_PATH = path.join(require("os").tmpdir(), "elastic-agent-skills-cache.json");
+const CACHE_TTL_MS = 60 * 60 * 1000;
+
+/**
+ * Reads the cached repo tree from the OS temp directory.
+ * Returns the tree array if the cache exists and is within TTL, otherwise null.
+ */
+function readCache() {
+  try {
+    const data = JSON.parse(fs.readFileSync(CACHE_PATH, "utf-8"));
+    if (Date.now() - data.timestamp < CACHE_TTL_MS) return data.tree;
+  } catch (err) {
+    console.error(`Cache read failed: ${err.message}. Fetching from GitHub.`);
+  }
+  return null;
+}
+
+/**
+ * Writes the repo tree to the OS temp directory with a timestamp.
+ */
+function writeCache(tree) {
+  try {
+    fs.writeFileSync(CACHE_PATH, JSON.stringify({ timestamp: Date.now(), tree }));
+  } catch (err) {
+    console.error(`Cache write failed: ${err.message}`);
+  }
+}
+
 /**
  * Fetches the full file tree of the repo from the GitHub Git Trees API.
  * Returns an array of {path, type} objects for every file and directory.
- * The ?recursive=1 parameter ensures nested directories are included.
+ * Uses a local cache (1 hour TTL) to avoid repeated API calls.
+ *
+ * @param {boolean} forceRefresh - skip cache and fetch fresh from GitHub
  */
-async function fetchRepoTree() {
+async function fetchRepoTree(forceRefresh = false) {
+  if (!forceRefresh) {
+    const cached = readCache();
+    if (cached) return cached;
+  }
   const url = `${API_BASE}/git/trees/${BRANCH}?recursive=1`;
   const res = await fetch(url, { headers: HEADERS });
   if (!res.ok) {
     throw new Error(`GitHub API error ${res.status}: ${await res.text()}`);
   }
   const data = await res.json();
+  writeCache(data.tree);
   return data.tree;
 }
 
@@ -175,8 +210,8 @@ async function installSkill(tree, skills, name, targetDir) {
 /**
  * Fetches and prints all available skills grouped by domain.
  */
-async function listSkills() {
-  const tree = await fetchRepoTree();
+async function listSkills(forceRefresh = false) {
+  const tree = await fetchRepoTree(forceRefresh);
   const skills = discoverSkills(tree);
   const domains = Object.keys(skills).sort();
 
@@ -199,8 +234,8 @@ async function listSkills() {
  * Installs one or more skills by name. Fetches the repo tree once,
  * then downloads each skill's files sequentially.
  */
-async function handleInstall(names, targetDir) {
-  const tree = await fetchRepoTree();
+async function handleInstall(names, targetDir, forceRefresh = false) {
+  const tree = await fetchRepoTree(forceRefresh);
   const skills = discoverSkills(tree);
   const installed = [];
 
@@ -258,8 +293,8 @@ function handleListInstalled(targetDir) {
 /**
  * Installs every available skill from the repo.
  */
-async function handleInstallAll(targetDir) {
-  const tree = await fetchRepoTree();
+async function handleInstallAll(targetDir, forceRefresh = false) {
+  const tree = await fetchRepoTree(forceRefresh);
   const skills = discoverSkills(tree);
   const allNames = [];
   for (const list of Object.values(skills)) {
@@ -289,7 +324,8 @@ Options:
   --uninstall       Remove one or more installed skills
   --installed       List locally installed skills
   --scope <scope>   "workspace" (default) installs to .agents/skills/ in current directory
-                    "user" installs to ~/.agents/skills/ for all projects`);
+                    "user" installs to ~/.agents/skills/ for all projects
+  --refresh         Skip cache and fetch fresh skill data from GitHub`);
     process.exit(0);
   }
 
@@ -300,13 +336,14 @@ Options:
     process.exit(1);
   }
   const targetDir = resolveSkillsDir(scopeArg);
+  const forceRefresh = args.includes("--refresh");
 
   if (args.includes("--list")) {
-    await listSkills();
+    await listSkills(forceRefresh);
   } else if (args.includes("--installed")) {
     handleListInstalled(targetDir);
   } else if (args.includes("--install-all")) {
-    await handleInstallAll(targetDir);
+    await handleInstallAll(targetDir, forceRefresh);
   } else if (args.includes("--install")) {
     const installIdx = args.indexOf("--install");
     const names = [];
@@ -318,7 +355,7 @@ Options:
       console.error("Error: --install requires at least one skill name.");
       process.exit(1);
     }
-    await handleInstall(names, targetDir);
+    await handleInstall(names, targetDir, forceRefresh);
   } else if (args.includes("--uninstall")) {
     const uninstallIdx = args.indexOf("--uninstall");
     const names = [];
