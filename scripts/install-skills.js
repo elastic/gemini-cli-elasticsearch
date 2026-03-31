@@ -245,7 +245,8 @@ async function listSkills(forceRefresh = false) {
     console.log(`  ${String(i + 1).padStart(2)}) ${name}`);
   }
   console.log(`\nTotal: ${numbered.length} skills`);
-  console.log("Install by number: --install 1 5 12");
+  console.log("\nInstall by name, e.g: --install elasticsearch-esql cloud-setup");
+  console.log("Or install by number, e.g: --install 1 5 12");
 }
 
 /**
