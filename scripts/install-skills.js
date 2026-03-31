@@ -268,7 +268,8 @@ async function handleInstall(names, targetDir, forceRefresh = false) {
     installed.push(result);
   }
 
-  console.log(`\nInstalled ${installed.length} skill(s). Restart session to activate.`);
+  console.log(`\nInstalled ${installed.length} skill(s).`);
+  console.log("Reload skills with /skills reload or restart Gemini CLI.");
 }
 
 /**
