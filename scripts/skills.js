@@ -12,11 +12,11 @@
  * follow the Agent Skills open standard (https://agentskills.io/).
  *
  * Usage:
- *   node install-skills.js --list [--refresh]
- *   node install-skills.js --install <skill-name> [<skill-name> ...] [--scope <scope>] [--refresh]
- *   node install-skills.js --install-all [--scope <scope>] [--refresh]
- *   node install-skills.js --uninstall <skill-name> [<skill-name> ...] [--scope <scope>]
- *   node install-skills.js --installed [--scope <scope>]
+ *   node skills.js --list [--refresh]
+ *   node skills.js --install <skill-name> [<skill-name> ...] [--scope <scope>] [--refresh]
+ *   node skills.js --install-all [--scope <scope>] [--refresh]
+ *   node skills.js --uninstall <skill-name> [<skill-name> ...] [--scope <scope>]
+ *   node skills.js --installed [--scope <scope>]
  */
 
 const fs = require("fs");
@@ -34,7 +34,7 @@ const HEADERS = {
 };
 
 const CACHE_PATH = path.join(require("os").tmpdir(), "elastic-agent-skills-cache.json");
-const CACHE_TTL_MS = 60 * 60 * 1000;
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
 
 /**
  * Reads the cached repo tree from the OS temp directory.
@@ -340,11 +340,11 @@ async function main() {
 
   if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
     console.log(`Usage:
-  node install-skills.js --list
-  node install-skills.js --install <skill-name> [<skill-name> ...] [--scope <scope>]
-  node install-skills.js --install-all [--scope <scope>]
-  node install-skills.js --uninstall <skill-name> [<skill-name> ...] [--scope <scope>]
-  node install-skills.js --installed [--scope <scope>]
+  node skills.js --list
+  node skills.js --install <skill-name> [<skill-name> ...] [--scope <scope>]
+  node skills.js --install-all [--scope <scope>]
+  node skills.js --uninstall <skill-name> [<skill-name> ...] [--scope <scope>]
+  node skills.js --installed [--scope <scope>]
 
 Options:
   --list            List all available skills from elastic/agent-skills
