@@ -1,7 +1,0 @@
-description = "Use only to uninstall Elastic Agent Skills by name."
-
-prompt = """
-Run the command and display this output verbatim. Do not add commentary or reformat.
-
-!{node "${extensionPath}${/}scripts${/}install-skills.js" --uninstall {{args}}}
-"""

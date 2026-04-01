@@ -1,7 +1,0 @@
-description = "Use only to install an Elastic Agent Skill by name."
-
-prompt = """
-Run the command and display this output verbatim. Do not add commentary or reformat.
-
-!{node "${extensionPath}${/}scripts${/}install-skills.js" --install {{args}}}
-"""
