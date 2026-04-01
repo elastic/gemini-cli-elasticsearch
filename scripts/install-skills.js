@@ -71,8 +71,12 @@ function writeCache(tree) {
 async function fetchRepoTree(forceRefresh = false) {
   if (!forceRefresh) {
     const cached = readCache();
-    if (cached) return cached;
+    if (cached) {
+      console.log("Using cached skill data.\n");
+      return cached;
+    }
   }
+  console.log("Fetching skills from elastic/agent-skills repository...\n");
   const url = `${API_BASE}/git/trees/${BRANCH}?recursive=1`;
   const res = await fetch(url, { headers: HEADERS });
   if (!res.ok) {
