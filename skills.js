@@ -5,22 +5,24 @@
  *
  * Fetches skill metadata and files from the elastic/agent-skills GitHub repo
  * via the REST API. Downloads raw file content directly — no git clone needed.
- * Zero external dependencies: only Node.js built-ins (fs, path) and fetch (Node 18+).
+ * Zero external dependencies: only Node.js built-ins (fs, path, readline) and
+ * fetch (Node 18+).
  *
- * Skills are installed into .agents/skills/ by default, which is the standard
- * discovery directory for Gemini CLI, Cursor, Codex, and other agents that
- * follow the Agent Skills open standard (https://agentskills.io/).
+ * Skills are installed into the skills/ directory at the root of the project,
+ * next to this script.
  *
  * Usage:
- *   node skills.js --list [--refresh]
- *   node skills.js --install <skill-name> [<skill-name> ...] [--scope <scope>] [--refresh]
- *   node skills.js --install-all [--scope <scope>] [--refresh]
- *   node skills.js --uninstall <skill-name> [<skill-name> ...] [--scope <scope>]
- *   node skills.js --installed [--scope <scope>]
+ *    node skills.js --list
+ *    node skills.js --install <skill-name> [<skill-name> ...]
+ *    node skills.js --install --interactive
+ *    node skills.js --install-all
+ *    node skills.js --uninstall <skill-name> [<skill-name> ...]
+ *    node skills.js --installed
  */
 
 const fs = require("fs");
 const path = require("path");
+const readline = require("readline");
 
 const REPO_OWNER = "elastic";
 const REPO_NAME = "agent-skills";
@@ -154,21 +156,13 @@ async function downloadFile(filePath) {
 }
 
 /**
- * Resolves the skills directory for a given scope.
- * Checks for existing .agents/skills/ or .gemini/skills/ directories and uses
- * whichever exists. If neither exists, defaults to .agents/skills/ (the
- * cross-tool standard). Matches Gemini CLI's own --scope behavior.
- *
- * @param {"workspace"|"user"} scope - "workspace" uses cwd, "user" uses home dir
+ * Returns the skills directory: skills/ next to this script (project root).
+ * Creates the directory if it does not already exist.
  */
-function resolveSkillsDir(scope) {
-  const base = scope === "user" ? require("os").homedir() : process.cwd();
-  const agentsPath = path.join(base, ".agents", "skills");
-  const geminiPath = path.join(base, ".gemini", "skills");
-
-  if (fs.existsSync(agentsPath)) return agentsPath;
-  if (fs.existsSync(geminiPath)) return geminiPath;
-  return agentsPath;
+function getSkillsDir() {
+  const dir = path.resolve(__dirname, "skills");
+  fs.mkdirSync(dir, { recursive: true });
+  return dir;
 }
 
 /**
@@ -195,6 +189,110 @@ function buildNumberedList(skills) {
     }
   }
   return list;
+}
+
+/**
+ * Shows an interactive multi-select picker for skills.
+ * Controls: up/down arrows (or j/k), Space to toggle, Enter to install,
+ * q/esc/Ctrl+C to cancel.
+ */
+function selectSkillsInteractive(numbered) {
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    throw new Error("Interactive mode requires a TTY terminal.");
+  }
+  if (numbered.length === 0) {
+    throw new Error("No skills available to select.");
+  }
+
+  return new Promise((resolve) => {
+    let selected = 0;
+    let top = 0;
+    const selectedIndices = new Set();
+
+    const visibleRows = Math.max(6, (process.stdout.rows || 20) - 6);
+
+    function ensureVisible() {
+      if (selected < top) top = selected;
+      if (selected >= top + visibleRows) top = selected - visibleRows + 1;
+    }
+
+    function render() {
+      ensureVisible();
+      const end = Math.min(top + visibleRows, numbered.length);
+
+      process.stdout.write("\x1b[2J\x1b[H");
+      process.stdout.write("Select one or more skills to install\n");
+      process.stdout.write("Use ↑/↓ (or j/k), Space to toggle, Enter to install, q to cancel\n\n");
+
+      for (let i = top; i < end; i++) {
+        const item = numbered[i];
+        const checked = selectedIndices.has(i) ? "[*]" : "[ ]";
+        const line = `${checked} [${item.domain}] ${item.name}`;
+        if (i === selected) {
+          process.stdout.write(`\x1b[7m${line}\x1b[0m\n`);
+        } else {
+          process.stdout.write(`${line}\n`);
+        }
+      }
+
+      process.stdout.write(`\nSelected: ${selectedIndices.size}`);
+
+      if (end < numbered.length) {
+        process.stdout.write(`\n... ${numbered.length - end} more\n`);
+      }
+    }
+
+    function cleanup() {
+      process.stdin.removeListener("keypress", onKeypress);
+      if (process.stdin.isTTY) {
+        process.stdin.setRawMode(false);
+      }
+      process.stdin.pause();
+      process.stdout.write("\x1b[?25h\x1b[0m\n");
+    }
+
+    function onKeypress(_, key = {}) {
+      if (key.name === "up" || key.name === "k") {
+        selected = selected > 0 ? selected - 1 : numbered.length - 1;
+        render();
+        return;
+      }
+      if (key.name === "down" || key.name === "j") {
+        selected = selected < numbered.length - 1 ? selected + 1 : 0;
+        render();
+        return;
+      }
+      if (key.name === "return") {
+        const names = Array.from(selectedIndices)
+          .sort((a, b) => a - b)
+          .map((idx) => numbered[idx].name);
+        cleanup();
+        resolve(names);
+        return;
+      }
+      if (key.name === "space") {
+        if (selectedIndices.has(selected)) {
+          selectedIndices.delete(selected);
+        } else {
+          selectedIndices.add(selected);
+        }
+        render();
+        return;
+      }
+      if (key.name === "escape" || key.name === "q" || (key.ctrl && key.name === "c")) {
+        cleanup();
+        resolve([]);
+      }
+    }
+
+    readline.emitKeypressEvents(process.stdin);
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdout.write("\x1b[?25l");
+    process.stdin.on("keypress", onKeypress);
+
+    render();
+  });
 }
 
 /**
@@ -277,6 +375,36 @@ async function handleInstall(names, targetDir, forceRefresh = false) {
 }
 
 /**
+ * Installs a single skill chosen in an interactive picker.
+ */
+async function handleInstallInteractive(targetDir, forceRefresh = false) {
+  const tree = await fetchRepoTree(forceRefresh);
+  const skills = discoverSkills(tree);
+  const numbered = buildNumberedList(skills);
+
+  const selectedNames = await selectSkillsInteractive(numbered);
+  if (selectedNames.length === 0) {
+    console.log("No skills selected. Installation canceled.");
+    return;
+  }
+
+  console.log("\nSelected skills:");
+  for (const name of selectedNames) {
+    console.log(`  - ${name}`);
+  }
+  console.log();
+
+  const installed = [];
+  for (const name of selectedNames) {
+    const result = await installSkill(tree, skills, name, targetDir);
+    installed.push(result);
+  }
+
+  console.log(`\nInstalled ${installed.length} skill(s).`);
+  console.log("Reload skills with /skills reload or restart Gemini CLI.");
+}
+
+/**
  * Removes one or more installed skills by deleting their directories.
  */
 function handleUninstall(names, targetDir) {
@@ -341,30 +469,26 @@ async function main() {
   if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
     console.log(`Usage:
   node skills.js --list
-  node skills.js --install <skill-name> [<skill-name> ...] [--scope <scope>]
-  node skills.js --install-all [--scope <scope>]
-  node skills.js --uninstall <skill-name> [<skill-name> ...] [--scope <scope>]
-  node skills.js --installed [--scope <scope>]
+  node skills.js --install <skill-name> [<skill-name> ...]
+  node skills.js --install --interactive
+  node skills.js --install-all
+  node skills.js --uninstall <skill-name> [<skill-name> ...]
+  node skills.js --installed
 
 Options:
   --list            List all available skills from elastic/agent-skills
   --install         Install one or more skills by name
+  --interactive     Interactive multi-select skill picker (Space to toggle)
   --install-all     Install all available skills
   --uninstall       Remove one or more installed skills
   --installed       List locally installed skills
-  --scope <scope>   "workspace" (default) installs to .agents/skills/ in current directory
-                    "user" installs to ~/.agents/skills/ for all projects
-  --refresh         Skip cache and fetch fresh skill data from GitHub`);
+  --refresh         Skip cache and fetch fresh skill data from GitHub
+
+Skills are installed to the skills/ directory at the root of this project.`);
     process.exit(0);
   }
 
-  const scopeIdx = args.indexOf("--scope");
-  const scopeArg = scopeIdx !== -1 && args[scopeIdx + 1] ? args[scopeIdx + 1] : "workspace";
-  if (!["workspace", "user"].includes(scopeArg)) {
-    console.error(`Error: --scope must be "workspace" or "user" (got "${scopeArg}")`);
-    process.exit(1);
-  }
-  const targetDir = resolveSkillsDir(scopeArg);
+  const targetDir = getSkillsDir();
   const forceRefresh = args.includes("--refresh");
 
   if (args.includes("--list")) {
@@ -375,16 +499,25 @@ Options:
     await handleInstallAll(targetDir, forceRefresh);
   } else if (args.includes("--install")) {
     const installIdx = args.indexOf("--install");
+    const interactive = args.includes("--interactive") || args.includes("-i");
     const names = [];
     for (let i = installIdx + 1; i < args.length; i++) {
       if (args[i].startsWith("--")) break;
       names.push(args[i]);
     }
-    if (names.length === 0) {
-      console.error("Error: --install requires at least one skill name.");
-      process.exit(1);
+    if (interactive) {
+      if (names.length > 0) {
+        console.error("Error: --interactive cannot be combined with explicit skill names.");
+        process.exit(1);
+      }
+      await handleInstallInteractive(targetDir, forceRefresh);
+    } else {
+      if (names.length === 0) {
+        console.error("Error: --install requires at least one skill name, or use --interactive.");
+        process.exit(1);
+      }
+      await handleInstall(names, targetDir, forceRefresh);
     }
-    await handleInstall(names, targetDir, forceRefresh);
   } else if (args.includes("--uninstall")) {
     const uninstallIdx = args.indexOf("--uninstall");
     const names = [];
