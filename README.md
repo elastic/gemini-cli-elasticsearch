@@ -113,7 +113,7 @@ You can list, select and install the Elastic skills using the following terminal
 node ~/.gemini/extensions/elasticsearch/skills.js --install --interactive
 ```
 
-If you are in the Gemini CLI terminal remember to use `!` as prefix for the command.
+If you are in the Gemini CLI terminal, remember to use `!` as a prefix for the command.
 
 For more information about the `skills.js` script you can read the [dedicated page](SKILLS_INSTALL.md).
 
