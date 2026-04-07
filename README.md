@@ -2,7 +2,7 @@ The official Elasticsearch extension for the [Gemini CLI](https://github.com/goo
 
 Connects directly to Elasticsearch using:
 - Model Context Protocol (MCP)
-- Agent Skills (using the Elasticsearch APIs)
+- Agent Skills (using the `skills.js` script)
 
 > [!CAUTION]
 > This extension is currently experimental.
@@ -46,7 +46,7 @@ Connects directly to Elasticsearch using:
     
     You should see `✓ elastic-agent-builder ... - Connected`
 
-7. (Optional) Install Agent Skills from [elastic/agent-skills](https://github.com/elastic/agent-skills) -- see [Usage with Agent Skills](#usage-with-agent-skills) below.
+7. (Optional) Install Agent Skills using the `skills.js` script -- see [Install Elastic Skills](#install-elastic-skills) below.
 
 8. Test with a query using MCP:
 
